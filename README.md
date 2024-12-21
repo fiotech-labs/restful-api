@@ -19,3 +19,19 @@ If you have Maven installed on your machine
 ```
 mvn spring-boot:run
 ```
+
+Once the application is running, you can access it at [http://localhost:8080](http://localhost:8080).
+
+## Build
+
+To build the project, run the following command in a terminal window
+
+```
+./mvnw clean package
+```
+
+If you have Maven installed on your machine
+
+```
+mvn clean package
+```
