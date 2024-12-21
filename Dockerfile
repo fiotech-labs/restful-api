@@ -1,4 +1,5 @@
-FROM openjdk:8-jdk-alpine
+# Use official Java image
+FROM openjdk:17-jdk-slim
 
 RUN addgroup -S spring && adduser -S spring -G spring
 
