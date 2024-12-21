@@ -27,6 +27,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       # Set up JDK
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -34,6 +40,14 @@ jobs:
           java-version: "17"
           distribution: "temurin"
           cache: maven
+
+      # Install the cosign tool except on PR
+      # https://github.com/sigstore/cosign-installer
+      - name: Install cosign
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: sigstore/cosign-installer@v3.7.0
+        with:
+          cosign-release: "v2.4.1"
 
       # Build with Maven
       - name: Build with Maven
@@ -47,14 +61,6 @@ jobs:
             exit 1
           fi
           echo "JAR file found: target/app-release.jar"
-
-      # Install the cosign tool except on PR
-      # https://github.com/sigstore/cosign-installer
-      - name: Install cosign
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
-        with:
-          cosign-release: "v2.2.4"
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -86,6 +92,7 @@ jobs:
         with:
           context: . # Ensure the current directory is used as the context
           file: ./Dockerfile # Explicitly specify the Dockerfile location
+          platforms: linux/amd64,linux/arm64
           push: ${{ startsWith(github.ref, 'refs/tags/') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
